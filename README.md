@@ -8,7 +8,7 @@ Collect the discography list of artists from their respective wikipedia pages.
 ```
 - index.js
 - albums/
-    - index.js
+    - list.js
 - bower.json
 - package.json
 - README.md
