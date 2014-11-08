@@ -1,0 +1,16 @@
+{
+  "name": "artist-albums",
+  "version": "0.0.1",
+  "description": "aggregate albums from artist wikipedia pages and save them into a markdown file",
+  "main": "index.js",
+  "dependencies": {
+    "underscore": "^1.7.0"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Adnan Asani",
+  "license": "ISC",
+  "private": true
+}
