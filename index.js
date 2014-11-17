@@ -68,6 +68,10 @@ var artistToMarkdown = function(list) {
         fs.remove(FILE_NAME);
     }
     
+    artists = _.sortBy(artists, function(artistItem) {
+        return artistItem.name;
+    });
+
     var fileContent = "";
     _.each(artists, function(artist, index) {
         var artistString = "";
@@ -75,7 +79,7 @@ var artistToMarkdown = function(list) {
 
         _.each(artist.albums, function(album, index) {
             var count = (index+1);
-            var albumString = "\n" + count + " - " + album;
+            var albumString = "\n" + count + ". " + album;
             artistString += albumString;
         });
 
