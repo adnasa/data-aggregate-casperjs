@@ -29,7 +29,7 @@ Spectre.prototype.setRequestedArtist = function(name) {
     return this;
 };
 
-Spectre.prototype.getRequestedArtist = function(name) {
+Spectre.prototype.getRequestedArtist = function() {
     return this._requestedArtist;
 };
 
