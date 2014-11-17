@@ -8,6 +8,7 @@ var mainDir = "./data/discography-wikipedia-collection";
 
 var albums  = require(mainDir + '/list');
 var WIKIPEDIA_URL = 'http://www.wikipedia.org/';
+var mdHelper = require('./lib/helper/mdHelper');
 
 var Spectre = function() {
     Spectre.super_.apply(this, arguments);
@@ -17,7 +18,6 @@ var Spectre = function() {
 };
 
 utils.inherits(Spectre, Casper);
-
 Spectre.prototype.addArtist = function(artist) {
     this.artists.push(artist);
     return this;
@@ -51,11 +51,11 @@ var getHeadlineString = function(name) {
     var k = "=";
     var string = "";
     var length = (name.length + 2);
- 
+
     for (var i = 0; i < length; i++) {
         string += k;
     };
- 
+
     return string;
 }
 
@@ -64,23 +64,18 @@ var artistToMarkdown = function(list) {
         return;
     }
     var artists = list;
-    
+
     artists = _.sortBy(artists, function(artistItem) {
         return artistItem.name;
     });
 
     var fileContent = "";
+
     _.each(artists, function(artist, index) {
         var artistString = "";
-        artistString += artist.name + "\n" + getHeadlineString(artist.name) + "\n";
-
-        _.each(artist.albums, function(album, index) {
-            var count = (index+1);
-            var albumString = "\n" + count + ". " + album;
-            artistString += albumString;
-        });
-
-        artistString += "\n\n---\n\n";
+        artistString += mdHelper.headline(artist.name);
+        artistString += mdHelper.list(artist.albums, true);
+        artistString += mdHelper.sectionEnd();
         fileContent += artistString;
     });
 
