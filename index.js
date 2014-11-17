@@ -1,4 +1,6 @@
+var fs = require('fs');
 var _       = require('underscore')._;
+var _str   = require('underscore.string');
 var Casper  = require('casper').Casper;
 var utils   = require('utils');
 var albums  = require('./albums/list');
@@ -41,6 +43,50 @@ var spectre = new Spectre({
     , verbose: true
     // , logLevel: 'debug'
 });
+
+var getHeadlineString = function(name) {
+    var k = "=";
+    var string = "";
+    var length = (name.length + 2);
+ 
+    for (var i = 0; i < length; i++) {
+        string += k;
+    };
+ 
+    return string;
+}
+
+var artistToMarkdown = function(list) {
+    if (!list || !list.length) {
+        return;
+    }
+
+    var artists = list;
+    var FILE_NAME = "discography.md";
+
+    if (fs.exists(FILE_NAME)) {
+        fs.remove(FILE_NAME);
+    }
+    
+    var fileContent = "";
+    _.each(artists, function(artist, index) {
+        var artistString = "";
+        artistString += artist.name + "\n" + getHeadlineString(artist.name) + "\n";
+
+        _.each(artist.albums, function(album, index) {
+            var count = (index+1);
+            var albumString = "\n" + count + " - " + album;
+            artistString += albumString;
+        });
+
+        artistString += "\n\n---\n\n";
+        fileContent += artistString;
+    });
+
+    var artistNames = _.pluck(artists, 'name').join('_');
+    var file = "discographies/" + _str.camelize(artistNames) + ".md";
+    fs.write(FILE_NAME, fileContent, 'a');
+};
 
 spectre.on('artist.loaded', function() {
     var albumList = [];
@@ -98,7 +144,7 @@ spectre.start().each(albums, function(_self, artistName) {
         _self.emit('artist.loaded');
     });
 }).then(function() {
-    utils.dump(this.managed);
+    artistToMarkdown(this.managed);
 });
 
 spectre.run();
