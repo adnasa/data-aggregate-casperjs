@@ -1,17 +1,48 @@
 var _       = require('underscore')._;
-var casper  = require('casper').create({
+var Casper  = require('casper').Casper;
+var utils   = require('utils');
+var albums  = require('./albums/list');
+var WIKIPEDIA_URL = 'http://www.wikipedia.org/';
+
+var Spectre = function() {
+    Spectre.super_.apply(this, arguments);
+    this.managed = [];
+    this.artists = [];
+    this._requestedArtist = null;
+};
+
+utils.inherits(Spectre, Casper);
+
+Spectre.prototype.addArtist = function(artist) {
+    this.artists.push(artist);
+    return this;
+};
+
+Spectre.prototype.addManagedArtist = function(artist) {
+    this.managed.push(artist);
+    this._requestedArtist = null;
+    return this;
+};
+
+Spectre.prototype.setRequestedArtist = function(name) {
+    this._requestedArtist = name;
+    return this;
+};
+
+Spectre.prototype.getRequestedArtist = function(name) {
+    return this._requestedArtist;
+};
+
+var spectre = new Spectre({
     clientScripts: [
         'bower_components/jquery/dist/jquery.min.js',
         'bower_components/underscore/underscore.js'
     ]
-    // , verbose: true
+    , verbose: true
     // , logLevel: 'debug'
 });
-var utils   = require('utils');
-var albums  = require('albums/list');
-var WIKIPEDIA_URL = 'http://www.wikipedia.org/';
 
-casper.on('artist.loaded', function() {
+spectre.on('artist.loaded', function() {
     var albumList = [];
     var artist = null;
     albumList = this.evaluate(function() {
@@ -49,29 +80,25 @@ casper.on('artist.loaded', function() {
 
     if (albumList.length) {
         artist = {
-            name: this._requestedArtist,
+            name: this.getRequestedArtist(),
             albums: albumList
         };
-        utils.dump(artist);
-        // @TODO: go to bed
+        this.addManagedArtist(artist);
     }
 });
 
-casper.start().each(albums, function(_self, artistName) {
+spectre.start().each(albums, function(_self, artistName) {
     _self.thenOpen(WIKIPEDIA_URL, function() {
         this.fill('form.search-form[action="//www.wikipedia.org/search-redirect.php"]', {
             'search': artistName
         }, true);
     }).then(function() {
-        /**
-         * @TODO: emitting with parameters
-         * or write a god damn plug-in
-         */
-        _self._requestedArtist = artistName;
-
-        // Let's go!
+        _self.addArtist(artistName);
+        _self.setRequestedArtist(artistName);
         _self.emit('artist.loaded');
     });
+}).then(function() {
+    utils.dump(this.managed);
 });
 
-casper.run();
+spectre.run();
