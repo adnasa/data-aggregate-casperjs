@@ -47,18 +47,6 @@ var spectre = new Spectre({
     // , logLevel: 'debug'
 });
 
-var getHeadlineString = function(name) {
-    var k = "=";
-    var string = "";
-    var length = (name.length + 2);
-
-    for (var i = 0; i < length; i++) {
-        string += k;
-    };
-
-    return string;
-}
-
 var artistToMarkdown = function(list) {
     if (!list || !list.length) {
         return;
