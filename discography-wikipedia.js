@@ -3,7 +3,10 @@ var _       = require('underscore')._;
 var _str   = require('underscore.string');
 var Casper  = require('casper').Casper;
 var utils   = require('utils');
-var albums  = require('./albums/list');
+
+var mainDir = "./data/discography-wikipedia-collection";
+
+var albums  = require(mainDir + '/list');
 var WIKIPEDIA_URL = 'http://www.wikipedia.org/';
 
 var Spectre = function() {
@@ -83,7 +86,7 @@ var artistToMarkdown = function(list) {
 
     var date = new Date();
     var FILE_NAME = ['albums', date.toISOString()].join(', ') + ".md";
-    fs.write("albums/" + FILE_NAME, fileContent, 'a');
+    fs.write(mainDir + "/" + FILE_NAME, fileContent, 'a');
 };
 
 spectre.on('artist.loaded', function() {
@@ -143,6 +146,8 @@ spectre.start().each(albums, function(_self, artistName) {
     });
 }).then(function() {
     artistToMarkdown(this.managed);
+}).then(function() {
+    utils.dump("\n Finished task");
 });
 
 spectre.run();
