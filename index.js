@@ -60,13 +60,7 @@ var artistToMarkdown = function(list) {
     if (!list || !list.length) {
         return;
     }
-
     var artists = list;
-    var FILE_NAME = "discography.md";
-
-    if (fs.exists(FILE_NAME)) {
-        fs.remove(FILE_NAME);
-    }
     
     artists = _.sortBy(artists, function(artistItem) {
         return artistItem.name;
@@ -87,9 +81,9 @@ var artistToMarkdown = function(list) {
         fileContent += artistString;
     });
 
-    var artistNames = _.pluck(artists, 'name').join('_');
-    var file = "discographies/" + _str.camelize(artistNames) + ".md";
-    fs.write(FILE_NAME, fileContent, 'a');
+    var date = new Date();
+    var FILE_NAME = ['albums', date.toISOString()].join(', ') + ".md";
+    fs.write("albums/" + FILE_NAME, fileContent, 'a');
 };
 
 spectre.on('artist.loaded', function() {
